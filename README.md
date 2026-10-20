@@ -773,7 +773,7 @@ LOGGING_LEVEL=DEBUG
 - Aim for high test coverage
 
 #### Test Suite
-A comprehensive test suite has been implemented for all services in the `com.firefly.core.kycb.core.services` package. The test suite ensures that all service implementations function correctly and maintain their expected behavior over time.
+A comprehensive test suite has been implemented for all services in the `io.fireflysoftware.core.kycb.core.services` package. The test suite ensures that all service implementations function correctly and maintain their expected behavior over time.
 
 The test suite covers:
 - CRUD operations (Create, Read, Update, Delete)
@@ -783,7 +783,7 @@ The test suite covers:
 
 Each service implementation has a corresponding test class that follows a consistent structure and testing approach. The tests use JUnit 5, Mockito, and Reactor Test to verify the behavior of the services.
 
-For more details about the test suite, see the [Test Suite README](core-common-kycb-mgmt-core/src/test/java/com/firefly/core/kycb/core/services/README.md).
+For more details about the test suite, see the [Test Suite README](core-common-kycb-mgmt-core/src/test/java/io/fireflysoftware/core/kycb/core/services/README.md).
 
 To run the tests, use the following Maven command:
 ```bash
