@@ -12,6 +12,7 @@
     </parent>
 
     <artifactId>core-common-kycb-mgmt</artifactId>
+    <name>core-common-kycb-mgmt</name>
     <packaging>pom</packaging>
     <modules>
         <module>core-common-kycb-mgmt-core</module>
