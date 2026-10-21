@@ -1,9 +1,9 @@
 <a href="https://fireflysoftware.io/openplatform/">
 <picture>
-  <source media="(max-width: 640px) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/firefly-oss/.github/main/profile/assets/banner-narrow-dark.svg">
-  <source media="(max-width: 640px)" srcset="https://raw.githubusercontent.com/firefly-oss/.github/main/profile/assets/banner-narrow-light.svg">
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/firefly-oss/.github/main/profile/assets/banner-dark.svg">
-  <img src="https://raw.githubusercontent.com/firefly-oss/.github/main/profile/assets/banner-light.svg" alt="Firefly OpenPlatform - Core Common - KYC and KYB" width="100%">
+  <source media="(max-width: 640px) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/fireflysoftwaresolutions/.github/main/profile/assets/banner-narrow-dark.svg">
+  <source media="(max-width: 640px)" srcset="https://raw.githubusercontent.com/fireflysoftwaresolutions/.github/main/profile/assets/banner-narrow-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/fireflysoftwaresolutions/.github/main/profile/assets/banner-dark.svg">
+  <img src="https://raw.githubusercontent.com/fireflysoftwaresolutions/.github/main/profile/assets/banner-light.svg" alt="Firefly OpenPlatform - Core Common - KYC and KYB" width="100%">
 </picture>
 </a>
 
@@ -236,8 +236,8 @@ The API follows RESTful principles and is organized into the following main cate
 - `/api/v1/identity/parties/{partyId}/business-profile`: Business profile endpoints
 
 #### Corporate Structure
-- `/api/v1/corporate/parties/{partyId}/structure`: Business structure endpoints
-- `/api/v1/corporate/parties/{partyId}/ubos`: UBO management endpoints
+- `/api/v1/corporate/parties/{partyId}/structure`: Business structure endpoints. An edge records a party and a different direct parent. An ownership cycle is rejected. An ownership percentage, when set, is from 0 to 100
+- `/api/v1/corporate/parties/{partyId}/ubos`: UBO management endpoints. Evidence of beneficial ownership is `beneficial_ownership_document`
 - `/api/v1/corporate/parties/{partyId}/locations`: Business location endpoints
 - `/api/v1/corporate/parties/{partyId}/economic-activities`: Economic activity endpoints
 
@@ -552,7 +552,7 @@ UboDTO verifyUbo = new UboDTO();
 verifyUbo.setIsVerified(true);
 verifyUbo.setVerificationDate(LocalDateTime.now());
 verifyUbo.setVerificationMethod(VerificationMethodEnum.DOCUMENT);
-verifyUbo.setTitularidadRealDocument("https://document-storage.example.com/docs/ownership-proof-123.pdf");
+verifyUbo.setBeneficialOwnershipDocument("https://document-storage.example.com/docs/ownership-proof-123.pdf");
 
 webClient.patch()
     .uri("/api/v1/corporate/parties/123/ubos/789")

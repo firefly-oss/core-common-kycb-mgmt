@@ -287,7 +287,7 @@ webClient.patch()
 
 ## Step 5: Define Corporate Structure
 
-The corporate structure defines the relationships between the business entity and its parent, subsidiaries, or affiliates.
+The corporate structure defines the relationships between the business entity and its parent, subsidiaries, or affiliates. An edge records a party and a different direct parent. An ownership cycle is rejected. An ownership percentage, when set, is from 0 to 100.
 
 ### API Endpoint
 
@@ -360,7 +360,7 @@ UboDTO verifyUbo = new UboDTO();
 verifyUbo.setIsVerified(true);
 verifyUbo.setVerificationDate(LocalDateTime.now());
 verifyUbo.setVerificationMethod(VerificationMethodEnum.DOCUMENT);
-verifyUbo.setTitularidadRealDocument("https://document-storage.example.com/docs/ownership-proof-123.pdf");
+verifyUbo.setBeneficialOwnershipDocument("https://document-storage.example.com/docs/ownership-proof-123.pdf");
 
 webClient.patch()
     .uri("/api/v1/corporate/parties/123/ubos/789")
