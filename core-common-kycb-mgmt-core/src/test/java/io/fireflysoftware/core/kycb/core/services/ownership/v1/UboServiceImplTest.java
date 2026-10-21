@@ -110,7 +110,7 @@ public class UboServiceImplTest {
         existingUbo.setIsVerified(true); // Set isVerified to avoid NPE
         existingUbo.setVerificationDate(LocalDateTime.now());
         existingUbo.setVerificationMethod("DOCUMENT");
-        existingUbo.setTitularidadRealDocument("document-url");
+        existingUbo.setBeneficialOwnershipDocument("document-url");
 
         Ubo updatedUbo = new Ubo();
         updatedUbo.setUboId(UBO_ID);
@@ -127,7 +127,7 @@ public class UboServiceImplTest {
                 savedUbo.setIsVerified(existingUbo.getIsVerified());
                 savedUbo.setVerificationDate(existingUbo.getVerificationDate());
                 savedUbo.setVerificationMethod(existingUbo.getVerificationMethod());
-                savedUbo.setTitularidadRealDocument(existingUbo.getTitularidadRealDocument());
+                savedUbo.setBeneficialOwnershipDocument(existingUbo.getBeneficialOwnershipDocument());
             }
             return Mono.just(savedUbo);
         });

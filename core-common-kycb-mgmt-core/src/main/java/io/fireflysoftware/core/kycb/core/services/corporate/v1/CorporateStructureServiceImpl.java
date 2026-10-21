@@ -29,7 +29,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -56,11 +59,11 @@ public class CorporateStructureServiceImpl implements CorporateStructureService 
     @Override
     public Mono<CorporateStructureDTO> create(CorporateStructureDTO dto) {
         CorporateStructure entity = mapper.toEntity(dto);
-        // Set start date to now if not provided
         if (entity.getStartDate() == null) {
             entity.setStartDate(LocalDateTime.now());
         }
-        return repository.save(entity)
+        return validateEdge(entity)
+                .flatMap(repository::save)
                 .map(mapper::toDTO);
     }
 
@@ -76,14 +79,19 @@ public class CorporateStructureServiceImpl implements CorporateStructureService 
                 .flatMap(existingEntity -> {
                     CorporateStructure updatedEntity = mapper.toEntity(dto);
                     updatedEntity.setCorporateStructureId(structureId);
-                    // Preserve creation date
+                    if (existingEntity.getPartyId() != null
+                            && !existingEntity.getPartyId().equals(updatedEntity.getPartyId())) {
+                        return Mono.error(new IllegalStateException(
+                                "Structure relationship " + structureId + " does not belong to party "
+                                        + updatedEntity.getPartyId()));
+                    }
                     updatedEntity.setDateCreated(existingEntity.getDateCreated());
-                    // Preserve verification data if not changing
-                    if (existingEntity.getIsVerified() && updatedEntity.getIsVerified() == null) {
+                    if (existingEntity.getIsVerified() != null && existingEntity.getIsVerified()
+                            && updatedEntity.getIsVerified() == null) {
                         updatedEntity.setIsVerified(existingEntity.getIsVerified());
                         updatedEntity.setVerificationDate(existingEntity.getVerificationDate());
                     }
-                    return repository.save(updatedEntity);
+                    return validateEdge(updatedEntity).flatMap(repository::save);
                 })
                 .map(mapper::toDTO);
     }
@@ -91,5 +99,36 @@ public class CorporateStructureServiceImpl implements CorporateStructureService 
     @Override
     public Mono<Void> delete(UUID structureId) {
         return repository.deleteById(structureId);
+    }
+
+    private Mono<CorporateStructure> validateEdge(CorporateStructure edge) {
+        BigDecimal percentage = edge.getOwnershipPercentage();
+        if (percentage != null
+                && (percentage.signum() < 0 || percentage.compareTo(new BigDecimal("100")) > 0)) {
+            return Mono.error(new IllegalStateException(
+                    "Ownership percentage must be between 0 and 100"));
+        }
+        if (edge.getPartyId() == null || edge.getParentEntityId() == null) {
+            return Mono.error(new IllegalStateException(
+                    "A structure edge needs the party and its direct parent"));
+        }
+        if (edge.getPartyId().equals(edge.getParentEntityId())) {
+            return Mono.error(new IllegalStateException("A party cannot be its own parent"));
+        }
+        return rejectsCycle(edge.getParentEntityId(), edge.getPartyId(), new HashSet<>())
+                .thenReturn(edge);
+    }
+
+    private Mono<Void> rejectsCycle(UUID current, UUID childId, Set<UUID> seen) {
+        if (current == null) {
+            return Mono.empty();
+        }
+        if (current.equals(childId) || !seen.add(current)) {
+            return Mono.error(new IllegalStateException("Corporate structure cannot contain a cycle"));
+        }
+        return repository.findByPartyId(current)
+                .map(CorporateStructure::getParentEntityId)
+                .concatMap(parent -> rejectsCycle(parent, childId, seen))
+                .then();
     }
 }

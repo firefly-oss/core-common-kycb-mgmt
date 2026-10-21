@@ -2269,9 +2269,9 @@ paths:
           required: false
           schema:
             type: string
-        - name: filters.titularidadRealDocument
+        - name: filters.beneficialOwnershipDocument
           in: query
-          description: Exact filter for titularidad real document
+          description: Exact filter for beneficial ownership document
           required: false
           schema:
             type: string
@@ -8203,7 +8203,7 @@ components:
           maxLength: 50
           minLength: 0
           type: string
-        titularidadRealDocument:
+        beneficialOwnershipDocument:
           maxLength: 200
           minLength: 0
           type: string

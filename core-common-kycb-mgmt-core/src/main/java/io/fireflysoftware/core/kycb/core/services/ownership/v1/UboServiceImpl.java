@@ -86,7 +86,7 @@ public class UboServiceImpl implements UboService {
                         updatedEntity.setIsVerified(existingEntity.getIsVerified());
                         updatedEntity.setVerificationDate(existingEntity.getVerificationDate());
                         updatedEntity.setVerificationMethod(existingEntity.getVerificationMethod());
-                        updatedEntity.setTitularidadRealDocument(existingEntity.getTitularidadRealDocument());
+                        updatedEntity.setBeneficialOwnershipDocument(existingEntity.getBeneficialOwnershipDocument());
                     }
                     return repository.save(updatedEntity);
                 })

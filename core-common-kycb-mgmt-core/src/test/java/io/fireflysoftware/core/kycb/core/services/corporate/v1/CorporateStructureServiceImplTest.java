@@ -31,9 +31,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -74,6 +76,7 @@ public class CorporateStructureServiceImplTest {
         corporateStructure.setPartyId(PARTY_ID);
         corporateStructure.setParentEntityId(PARENT_ENTITY_ID);
         corporateStructure.setDateCreated(LocalDateTime.now());
+        lenient().when(repository.findByPartyId(any())).thenReturn(Flux.empty());
     }
 
     @Test
@@ -248,5 +251,42 @@ public class CorporateStructureServiceImplTest {
                 .verifyComplete();
 
         verify(repository).deleteById(CORPORATE_STRUCTURE_ID);
+    }
+
+    @Test
+    void testCreateRejectsSelfLink() {
+        corporateStructure.setParentEntityId(PARTY_ID);
+        when(mapper.toEntity(any(CorporateStructureDTO.class))).thenReturn(corporateStructure);
+
+        StepVerifier.create(corporateStructureService.create(corporateStructureDTO))
+                .expectError(IllegalStateException.class)
+                .verify();
+
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void testCreateRejectsCycle() {
+        CorporateStructure ancestor = new CorporateStructure();
+        ancestor.setPartyId(PARENT_ENTITY_ID);
+        ancestor.setParentEntityId(PARTY_ID);
+        when(mapper.toEntity(any(CorporateStructureDTO.class))).thenReturn(corporateStructure);
+        when(repository.findByPartyId(PARENT_ENTITY_ID)).thenReturn(Flux.just(ancestor));
+
+        StepVerifier.create(corporateStructureService.create(corporateStructureDTO))
+                .expectError(IllegalStateException.class)
+                .verify();
+
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void testCreateRejectsPercentageAboveOneHundred() {
+        corporateStructure.setOwnershipPercentage(new BigDecimal("100.01"));
+        when(mapper.toEntity(any(CorporateStructureDTO.class))).thenReturn(corporateStructure);
+
+        StepVerifier.create(corporateStructureService.create(corporateStructureDTO))
+                .expectError(IllegalStateException.class)
+                .verify();
     }
 }

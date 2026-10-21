@@ -115,6 +115,7 @@ public class CorporateStructureController {
             @PathVariable UUID structureId
     ) {
         return corporateStructureService.getById(structureId)
+                .filter(dto -> partyId.equals(dto.getPartyId()))
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
@@ -170,7 +171,10 @@ public class CorporateStructureController {
             @Parameter(description = "ID of the structure relationship", required = true)
             @PathVariable UUID structureId
     ) {
-        return corporateStructureService.delete(structureId)
-                .then(Mono.just(ResponseEntity.noContent().<Void>build()));
+        return corporateStructureService.getById(structureId)
+                .filter(dto -> partyId.equals(dto.getPartyId()))
+                .flatMap(dto -> corporateStructureService.delete(structureId)
+                        .thenReturn(ResponseEntity.noContent().<Void>build()))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 }

@@ -66,8 +66,8 @@ public class Ubo extends BaseEntity {
     @Column("verification_method")
     private String verificationMethod;
 
-    @Column("titularidad_real_document")
-    private String titularidadRealDocument;
+    @Column("beneficial_ownership_document")
+    private String beneficialOwnershipDocument;
 
     @Column("verification_date")
     private LocalDateTime verificationDate;

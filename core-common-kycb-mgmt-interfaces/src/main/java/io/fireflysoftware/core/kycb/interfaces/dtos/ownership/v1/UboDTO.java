@@ -74,8 +74,8 @@ public class UboDTO extends BaseDTO {
     @Size(max = 50, message = "Verification method must not exceed 50 characters")
     private String verificationMethod;
 
-    @Size(max = 200, message = "Titularidad real document must not exceed 200 characters")
-    private String titularidadRealDocument;
+    @Size(max = 200, message = "Beneficial ownership document must not exceed 200 characters")
+    private String beneficialOwnershipDocument;
 
     @ValidDateTime
     private LocalDateTime verificationDate;
